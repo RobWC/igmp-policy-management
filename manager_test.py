@@ -37,7 +37,6 @@ mgr.open_config(type="ephemeral")
 while True:
     print "Wait " + str(time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()))
     name = r.brpoplpush("food","cooking")
-    print name
     open_start = datetime.datetime.now()
     print "Open config " + str(time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()))
     mgr.open_config(type="ephemeral")
@@ -46,7 +45,5 @@ while True:
     print "Commit Complete " + str(time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()))
     commit_stop = datetime.datetime.now() - open_start
     print commit_stop.total_seconds()
-    r.ltrim()
-
 
 mgr.close()
