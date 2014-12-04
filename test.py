@@ -31,7 +31,7 @@ policy-options {
 
 igmp_policy_template = '''
 policy-options {
-    policy-statement igmp-allowed {
+    policy-statement {{ customer_name }}-igmp-allowed {
         term allow-{{ customer_name }}-1 {
             from {
                 route-filter {{ group_addr }} exact;
@@ -59,12 +59,13 @@ policy-options {
 
 dev = Device(host="10.0.1.234",user="root",password="Juniper")
 dev.open()
+dev.bind(cu=Config)
 
 pprint(dev.facts)
 
 try:
     #attempt to open a configuration
-    output = dev.rpc("<open-configuration><private/></open-configuration>")
+    output = dev.rpc("<open-configuration><ephemeral/></open-configuration>")
 except Exception as err:
     #output an error if the configuration is not availble
     print err
@@ -81,28 +82,6 @@ output = dev.rpc.close_configuration()
 print output
 
 dev.close()
-
-class Manager():
-    def __init__(self,host,user,password)
-        self.dev = Device(host="10.0.1.234",user="root",password="Juniper")
-        self.dev.bind(cu=Config)
-
-    def open(self):
-        self.dev.open()
-
-    def load_config_template(self,template,template_vars)
-        new_template = Template(template)
-        final_template = new_template.render(template_vars)
-
-        try:
-            output = dev.cu.load(final_template,format="text",merge=True)
-        except Exception as err:
-            print err
-
-    def commit_config(self):
-        self.dev.rpc.commit_configuration()
-        self.dev.rpc.close_configuration()
-
 
 #apply igmp group to interface
 #create igmp group
