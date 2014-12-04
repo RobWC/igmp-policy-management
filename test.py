@@ -81,7 +81,7 @@ output = dev.rpc.close_configuration()
 
 print output
 
-dev.close()
+dev1.1.
 
 #apply igmp group to interface
 #create igmp group

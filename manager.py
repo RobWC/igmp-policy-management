@@ -12,6 +12,14 @@ class Manager():
     def open(self):
         try:
             self.dev.open()
+            print "Connection Open"
+        except Exception as err:
+            print err
+
+    def close(self):
+        try:
+            self.dev.close()
+            print "Connection Closed"
         except Exception as err:
             print err
 
@@ -21,7 +29,8 @@ class Manager():
     def open_config(self,type):
         try:
             #attempt to open a configuration
-            output = dev.rpc("<open-configuration><""/></open-configuration>")
+            output = self.dev.rpc("<open-configuration><{0}/></open-configuration>".format(type))
+            print "Open {0} configuration".format(type)
         except Exception as err:
             #output an error if the configuration is not availble
             print err
@@ -31,10 +40,15 @@ class Manager():
         final_template = new_template.render(template_vars)
 
         try:
-            output = dev.cu.load(final_template,format="text",merge=True)
+            output = self.dev.cu.load(final_template,format="text",merge=True)
+            print "Load Complete"
         except Exception as err:
             print err
 
     def commit_config(self):
-        self.dev.rpc.commit_configuration()
-        self.dev.rpc.close_configuration()
+        try:
+            self.dev.rpc.commit_configuration()
+            self.dev.rpc.close_configuration()
+            print "Commit Complete"
+        except Exception as err:
+            print err
