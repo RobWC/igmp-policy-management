@@ -9,8 +9,8 @@ time_list = []
 
 igmp_policy_template = '''
 policy-options {
-    policy-statement {{ customer_name }}-igmp-allowed {
-        term allow-{{ customer_name }}-1 {
+    policy-statement igmp-allowed {
+        term allow-{{ customer_name }}{
             from {
                 route-filter {{ group_addr }} exact;
                 source-address-filter {{ source_addr }} exact;
