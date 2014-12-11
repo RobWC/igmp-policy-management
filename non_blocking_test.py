@@ -3,6 +3,7 @@ import redis
 import datetime
 import time
 import signal
+import json
 import sys
 
 
@@ -35,20 +36,50 @@ policy-options {
 '''
 
 def pub_handler(message):
-    #Connect to device to push config
+    print "+====================================================+"
 
-    #open config
+    json_msg = json.loads(message["data"])
 
-    #load config
-    #mgr.load_config_template(igmp_policy_template,dict(customer_name=name,group_addr="224.1.1.1/32",source_addr="1.1.1.1/32",routes=["224.2.2.2/32"],source_address_filter="2.2.2.2/32"))
+    print json_msg
 
-    #commit config
-    #mgr.commit_config()
-    #print "Commit Complete " + str(time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()))
-    #commit_stop = datetime.datetime.now() - open_start
-    #time_list.append(commit_stop.total_seconds())
-    #print commit_stop.total_seconds()
-    print(message)
+    #message recieved start
+    msg_rec_start = datetime.datetime.now()
+    print "Recieved message at {0}".format(msg_rec_start)
+
+    #connection start timing
+    connection_start = datetime.datetime.now()
+    mgr = Manager("10.0.1.234","root","Juniper")
+    mgr.open()
+
+    #open config start timing
+    open_config_start = datetime.datetime.now()
+    mgr.open_config(type="ephemeral")
+
+    #load config timing
+    load_config_start = datetime.datetime.now()
+    mgr.load_config_template(igmp_policy_template,dict(customer_name=json_msg["client"],group_addr=json_msg["group"],source_addr="1.1.1.1/32",routes=["224.2.2.2/32"],source_address_filter="2.2.2.2/32"))
+    load_config_stop = datetime.datetime.now()
+
+    #commit config timing
+    commit_config_start = datetime.datetime.now()
+    mgr.commit_config()
+    commit_config_stop = datetime.datetime.now()
+
+    #open config stop timing
+    open_config_stop = datetime.datetime.now() - open_config_start
+    print "Total time for config: {0}".format(open_config_stop.total_seconds())
+
+    #connection stop timing
+    mgr.close()
+    connection_stop = datetime.datetime.now() - connection_start
+    print "Total time for QFX: {0}".format(connection_stop.total_seconds())
+
+    #msg recieved stop
+    msg_rec_stop = datetime.datetime.now()
+    total_time = msg_rec_stop - msg_rec_start
+    print "Total time for operation: {0}".format(total_time.total_seconds())
+    print "-====================================================-"
+
 
 
 pubsub_listener = r.pubsub(ignore_subscribe_messages=True)
