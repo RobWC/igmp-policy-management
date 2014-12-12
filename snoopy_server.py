@@ -21,16 +21,6 @@ policy-options {
             }
             then accept;
         }
-        term allow-{{ customer_name }}-2 {
-            from {
-                {% for route in routes %}route-filter {{ route }} exact;{% endfor %}
-                {% if source_address_filter is defined %}source-address-filter {{ source_address_filter }} exact;{% endif %}
-            }
-            then accept;
-        }
-        term deny-everything-else {
-            then reject;
-        }
     }
 }
 '''
@@ -39,8 +29,6 @@ def pub_handler(message):
     print "+====================================================+"
 
     json_msg = json.loads(message["data"])
-
-    print json_msg
 
     #message recieved start
     msg_rec_start = datetime.datetime.now()
@@ -57,7 +45,7 @@ def pub_handler(message):
 
     #load config timing
     load_config_start = datetime.datetime.now()
-    mgr.load_config_template(igmp_policy_template,dict(customer_name=json_msg["client"],group_addr=json_msg["group"],source_addr="1.1.1.1/32",routes=["224.2.2.2/32"],source_address_filter="2.2.2.2/32"))
+    mgr.load_config_template(igmp_policy_template,dict(customer_name=json_msg["client"],group_addr=json_msg["group"],source_addr="10.0.1.20/32",routes=["224.2.2.2/32"],source_address_filter="2.2.2.2/32"))
     load_config_stop = datetime.datetime.now()
 
     #commit config timing
